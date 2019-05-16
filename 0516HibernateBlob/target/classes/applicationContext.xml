@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+	
+	<!-- 인스턴스를 자동으로 생성해줄 패키지 설정 -->
+	<context:annotation-config/>
+	<context:component-scan base-package="hibernate"/>
+	
+	<!-- 데이터 베이스 접속정보 -->
+<bean id="dataSource"
+	class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+	<property name="driverClassName"
+		value="oracle.jdbc.driver.OracleDriver" />
+	<property
+		value="jdbc:log4jdbc:oracle:thin:@192.168.0.100:1521/XEPDB1"
+		name="url" />
+	<property name="username" value="user12" />
+	<property name="password" value="user12" />
+</bean>
+
+<bean
+		class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+		<!-- 접속할 데이터베이스 설정 -->
+		<property name="dataSource" ref="dataSource" />
+		
+		<!-- 매핑 파일 위치 설정 -->
+		<property name="mappingResources">
+			<list>
+				<value>hibernate/dao/sample.hbm.xml</value>
+			</list>
+		</property>
+		
+	<!-- 접속할 데이터베이스 종류 설정 -->
+		<property name="hibernateProperties">
+			<value>
+				hibernate.dialect=org.hibernate.dialect.Oracle10gDialect
+			</value>
+		</property>
+	</bean>
+	
+	<!-- 하이버네이트 트랜잭션 사용을 위한 bean 설정 -->
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<!-- 트랜잭션 사용을 어노테이션으로 할 수 있도록 해주는 설정 -->
+	<tx:annotation-driven/>
+	
+
+
+</beans>
